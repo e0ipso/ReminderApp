@@ -1,0 +1,16 @@
+{
+  "name": "Reminder App",
+  "description": "Lullabot's Art & Science project",
+  "version": "0.1",
+  "manifest_version": 2,
+  "permissions": ["alarms", "notifications", "storage"],
+  "app": {
+    "background": {
+      "scripts": ["background.js"]
+    }
+  },
+  "icons": {
+    "16": "clock-16.png",
+    "128": "clock-128.png"
+  }
+}
