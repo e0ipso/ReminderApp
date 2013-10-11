@@ -1,0 +1,10 @@
+<h1>Timers</h1>
+
+<ul>
+  <li ng-repeat="timer in timers">
+    <p><em>{{ timer.name }}</em> repeated every {{ timer.frequency }} from {{ timer.fromTime }} to {{ timer.toTime }}.</p>
+    <p class="description">{{ timer.description }}</p>
+
+    <!-- TODO: Add a filter to format time appropriately -->
+  </li>
+</ul>

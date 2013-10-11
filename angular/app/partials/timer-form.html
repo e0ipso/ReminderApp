@@ -1,0 +1,16 @@
+<h1>{{ title }}</h1>
+
+<form>
+  <label for="name">Name</label><input type="text" id="name" ng-model="timer.name" placeholder="Name"/><br/>
+  <span>id: </span><span ng-model="timer.id">{{ timer.id }}</span><br/>
+  <label for="description">Description</label><textarea name="description" id="description" cols="30"
+                                                        rows="10" ng-model="timer.description" placeholder="Description"></textarea><br/>
+  <label for="frequency">Frequency</label><input type="text" id="frequency" ng-model="timer.frequency" placeholder="Frequency"/>&nbsp;minutes.<br/>
+  <label for="schedule">Schedule</label><div id="schedule"><br/>
+    <label for="from-time">From: </label><input type="time" id="from-time" ng-model="timer.fromTime"/><br/>
+    <label for="to-time">To: </label><input type="time" id="to-time" ng-model="timer.toTime"/><br/>
+  </div>
+  <input type="submit" name="Save" ng-click="saveTimer();"/>
+</form>
+
+<pre><code>{{ timer }}</code></pre>
