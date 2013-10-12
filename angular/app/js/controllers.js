@@ -9,9 +9,9 @@ angular.module('reminderApp.controllers', []).
       var timer = $scope.timer;
       // Save it using the Chrome extension storage API.
       var key = timer.id;
-      chrome.storage.sync.set({key: timer}, function() {
+      chrome.storage.local.set({key: timer}, function() {
         // Notify that we saved.
-        $log.log(chrome.storage.sync.get(key));
+        $log.log(chrome.storage.local.get(key));
       });
     };
     // Create ID dynamically.

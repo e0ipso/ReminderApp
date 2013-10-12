@@ -10,6 +10,7 @@ angular.module('reminderApp', [
   'reminderApp.controllers'
 ]).
 config(['$routeProvider', function($routeProvider) {
+  $routeProvider.when('/timers', {templateUrl: 'partials/timers.html', controller: 'TimerFormController'});
   $routeProvider.when('/timer/add', {templateUrl: 'partials/timer-form.html', controller: 'TimerFormController'});
-  $routeProvider.otherwise({redirectTo: '/timer/add'});
+  $routeProvider.otherwise({redirectTo: '/timers'});
 }]);

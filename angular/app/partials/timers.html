@@ -1,0 +1,30 @@
+<!-- Main component for a primary marketing message or call to action -->
+<div class="jumbotron">
+  <h1>Reminders App</h1>
+  <p>Create timers and bind web-app related reminders to them. When the timer is up a, notification will appear to remind you to complete your action.</p>
+  <p>Examples:
+    <ul>
+      <li>Log time to Freckle</li>
+      <li>Share your thoughts to Yammer</li>
+      <li>Do your hands and neck exercises</li>
+      <li>Commit your code to GitHub</li>
+    </ul>
+  </p>
+</div>
+
+<div class="page-header">
+  <h1><span class="glyphicon glyphicon-time"></span> Timers.</h1>
+</div>
+
+<p ng-show="!timers">There are no timers to show. Please add timers.</p>
+<p ng-show="timers">
+  <ul>
+    <li ng-repeat="timer in timers" ng-show="timers">
+      <p><em>{{ timer.name }}</em> repeated every {{ timer.frequency | timeUnits }} from {{ timer.fromTime }} to {{ timer.toTime }}.</p>
+      <p class="description">{{ timer.description }}</p>
+    </li>
+  </ul>
+</p>
+<p>
+  <a href="#/timer/add" class="btn btn-primary"><span class="glyphicon glyphicon-plus-sign"></span> Add timer</a>
+</p>
