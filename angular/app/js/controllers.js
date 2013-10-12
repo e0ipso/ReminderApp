@@ -2,18 +2,16 @@
 
 /* Controllers */
 
-angular.module('reminderApp.controllers', []).
-  controller('TimerFormController', ['$scope', '$log', function($scope, $log) {
+angular.module('reminderApp.controllers', ['ChromeStorageModule']).
+  controller('TimerFormController', ['$scope', '$log', 'timerService', function ($scope, $log, timerService) {
     // Submit function.
     $scope.saveTimer = function () {
       var timer = $scope.timer;
       // Save it using the Chrome extension storage API.
       var key = timer.id;
-      chrome.storage.local.set({key: timer}, function() {
-        // Notify that we saved.
-        $log.log(chrome.storage.local.get(key));
-      });
-    };
+      // TODO: Provide feedback if everything works.
+      timerService.set(key, timer);
+    }
     // Create ID dynamically.
     $scope.$watch('timer.name', function () {
       var id = $scope.timer.name;
@@ -31,7 +29,10 @@ angular.module('reminderApp.controllers', []).
       fromTime: '',
       toTime: ''
     };
-  }])
-  .controller('MyCtrl2', [function() {
-
+  }]).
+  controller('TimerListController', ['$scope', 'timerService', function($scope, timerService) {
+    // Get the available timers.
+    // TODO: Convert to promises.
+    $scope.timers = {};
+    $scope.timers = timerService.all();
   }]);
