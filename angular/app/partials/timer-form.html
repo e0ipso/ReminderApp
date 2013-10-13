@@ -2,7 +2,7 @@
   <h1><span class="glyphicon glyphicon-time"></span> {{ title }}. <small>Then bind reminders to timers.</small></h1>
 </div>
 
-<form role="form" name="form" class="form-horizontal clearfix" novalidate>
+<form action="#/timers" role="form" name="form" class="form-horizontal clearfix" novalidate>
   <div class="form-group" ng-class="{true: 'has-error', false: 'has-success'}[form.name.$invalid]">
     <label for="name" class="col-sm-2 control-label">Name</label>
     <div class="col-sm-10">
@@ -38,5 +38,3 @@
 
   <button class="btn btn-primary pull-right" ng-click="saveTimer();" ng-disabled="form.$invalid">Save timer</button>
 </form>
-
-<pre><code>{{ timer }}</code></pre>
