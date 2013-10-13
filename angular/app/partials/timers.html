@@ -20,7 +20,7 @@
 <p ng-show="timers">
   <ul>
     <li ng-repeat="timer in timers" ng-show="timers">
-      <p><a class="timer-edit-link" href="#/timer/edit/{{ timer.id }}">Edit</a> <em>{{ timer.name }}</em> repeated every {{ timer.frequency | timeUnits }} from {{ timer.fromTime }} to {{ timer.toTime }}.</p>
+      <p><a class="timer-edit-link" ng-click="editTimerForm('{{ timer.id }}')"><span class="glyphicon glyphicon-edit"></span></a> <em>{{ timer.name }}</em> repeated every {{ timer.frequency | timeUnits }} from {{ timer.fromTime }} to {{ timer.toTime }}.</p>
       <small class="description">{{ timer.description }}</small>
     </li>
   </ul>

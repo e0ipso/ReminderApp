@@ -37,9 +37,13 @@ angular.module('reminderApp.services', ['ChromeStorageModule']).
           return values;
         });
       },
-      remove: function (key) {
-        key = timerPrefix + key;
-        return storage.remove(key);
+      remove: function (keys) {
+        // Prefix all variables prior to deletion.
+        keys = keys.map(function (item) {
+          return timerPrefix + item;
+        });
+
+        return storage.remove(keys);
       }
     };
   }]);

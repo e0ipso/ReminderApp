@@ -88,7 +88,12 @@ chromeStorage.service('chromeStorageService', [
           deferred.reject(chrome.runtime.lastError.message);
         }
         else {
-          deferred.resolve(value);
+          // Return the first object.
+          for (var key in data) {
+            data = data[key];
+            break;
+          }
+          deferred.resolve(data);
         }
       });
 
