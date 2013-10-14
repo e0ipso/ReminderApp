@@ -28,7 +28,7 @@ angular.module('reminderApp.debug.controllers', []).
       if (notificationId.indexOf('notification_debug_') == 0) {
         switch (buttonIndex) {
           case 0:
-            $scope.openUrl('add/timer');
+            $scope.openUri('timer/add');
             $log.log('Button %d clicked on %s.', buttonIndex, notificationId);
             break;
           case 1:
@@ -37,10 +37,9 @@ angular.module('reminderApp.debug.controllers', []).
       }
     });
     $scope.defaultUrl = chrome.runtime.getURL('');
-    $scope.openUrl = function (url) {
+    $scope.openUri = function (uri) {
       chrome.runtime.sendMessage(
-        { url: 'angular/app/index.html' + '#/' + url, action: 'openAppURI' },
-        function (response) { $log.log(response); }
+        { uri: uri, action: 'openAppURI' }
       );
     };
   }]);
