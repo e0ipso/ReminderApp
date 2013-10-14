@@ -1,0 +1,24 @@
+<div class="page-header">
+  <h1><span class="glyphicon glyphicon-wrench"></span> Debug. <small>Testing screen.</small></h1>
+</div>
+
+<form>
+  <div class="form-group">
+    <label for="url" class="col-sm-2 control-label">Internal URL</label>
+    <div class="col-sm-8">
+      <div class="input-group">
+        <span class="input-group-addon"><span class="glyphicon glyphicon-link"></span></span>
+        <input type="text" class="form-control" placeholder="App internal URL" id="url" name="url" ng-model="defaultUrl">
+      </div>
+    </div>
+    <div class="col-sm-2">
+      <button type="button" class="btn btn-default" ng-click="openUrl('{{ defaultUrl }}')">Open</button>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-2 control-label">Notifications</label>
+    <div class="col-sm-10">
+      <a class="btn btn-default btn-lg" ng-click="notification()">Create notification.</a>
+    </div>
+  </div>
+</form>

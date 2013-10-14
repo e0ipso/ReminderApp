@@ -78,9 +78,14 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule']).
     // Get the available timers.
     $scope.timers = {};
     $scope.timers = timerService.all();
+    $scope.timers.then(function (data) {
+      $scope.numTimers = Object.keys(data).length;
+    });
+    $scope.appName = chrome.i18n.getMessage('appName');
   }]).
   controller('NavigationMenuController', ['$scope', '$window', function($scope, $window) {
     $scope.closeWindow = function () {
       $window.close();
-    }
+    };
+    $scope.appName = chrome.i18n.getMessage('appName');
   }]);

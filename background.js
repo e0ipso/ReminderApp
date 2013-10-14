@@ -7,3 +7,12 @@ chrome.app.runtime.onLaunched.addListener(function() {
     'id': 'reminderApp'
   });
 });
+
+function responseCallback() {}
+function onMessage(message, sender, responseCallback) {
+  alert('Ola ke ase!');
+  chrome.app.window.create(message.url, {
+    'id': 'reminderApp'
+  });
+}
+chrome.app.runtime.onMessageExternal.addListener(onMessage);

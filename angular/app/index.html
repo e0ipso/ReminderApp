@@ -28,12 +28,12 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="/timers">Reminders</a>
+        <a class="navbar-brand" href="#/timers"><small class="glyphicon glyphicon-home"></small> {{ appName }}</a>
       </div>
       <div class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
           <li><a active-link="active" href="#/timers"><span class="glyphicon glyphicon-time"></span> Timers</a></li>
-          <li><a active-link="active" href="#/timer/add">Add timer</a></li>
+          <li><a active-link="active" href="#/timer/add"><span class="glyphicon glyphicon-plus"></span> Add timer</a></li>
           <li class="dropdown">
             <a href="#" active-link="active" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
             <ul class="dropdown-menu">
@@ -49,7 +49,7 @@
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li><a active-link="active" href="#/profile"><span class="glyphicon glyphicon-user"></span> Profile</a></li>
-          <li><a active-link="active" href="../navbar-static-top/">Static top</a></li>
+          <li><a active-link="active" href="#/debug"><span class="glyphicon glyphicon-wrench"></span> Debug</a></li>
           <li><a class="close-link" ng-click="closeWindow()"><span class="glyphicon glyphicon-remove-circle"></span> Close</a></li>
         </ul>
       </div><!--/.nav-collapse -->
@@ -62,12 +62,15 @@
       <p>ReminderApp v<span app-version></span> by Lullabot.</p>
     </footer>
   </div>
+  <script src="../../index.js"></script>
+  <script src="lib/angular/angular.js"></script>
   <script src="lib/angular/angular.js"></script>
   <script src="lib/angular/angular-route.js"></script>
   <script src="lib/vendor/chromeStorage.js"></script>
   <script src="js/app.js"></script>
   <script src="js/services.js"></script>
   <script src="js/controllers.js"></script>
+  <script src="js/debugging.js"></script>
   <script src="js/filters.js"></script>
   <script src="js/directives.js"></script>
   <!--Include bootstrap-->

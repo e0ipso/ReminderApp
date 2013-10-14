@@ -1,0 +1,9 @@
+{
+  "appName": {
+    "message": "Reminders App",
+    "description": "The name of the app."
+  },
+  "appDescription": {
+    "message": "Lullabot's Art & Science project"
+  }
+}
