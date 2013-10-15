@@ -5,8 +5,17 @@ html {
 
 body {
   -webkit-user-select: text;
+  overflow: visible;
 }
 
 a.close-link {
   color: red;
+}
+
+.timer-edit-link .glyphicon {
+  opacity: 0;
+}
+
+.list-group-item:hover .timer-edit-link .glyphicon {
+  opacity: 1;
 }

@@ -44,6 +44,26 @@ angular.module('reminderApp.services', ['ChromeStorageModule']).
         });
 
         return storage.remove(keys);
+      },
+      /**
+       * Get the status of the timer based on the current time.
+       *
+       * @param timer
+       * @returns {string}
+       */
+      getStatus: function (timer) {
+        var from = timer.fromTime, to = timer.toTime;
+        if (from >= to) {
+          return 'error';
+        }
+        else {
+          var now = new Date(), nowTime;
+          nowTime = now.getHours() + ':' + now.getMinutes();
+          if (from < nowTime && nowTime < to) {
+            return 'active';
+          }
+          return 'inactive';
+        }
       }
     };
   }]);

@@ -11,9 +11,10 @@ angular.module('reminderApp', [
   'reminderApp.controllers'
 ]).
 config(['$routeProvider', function($routeProvider) {
-  $routeProvider.when('/timers', {templateUrl: 'partials/timers.html', controller: 'TimerListController'}).
+  $routeProvider.when('/timers', {templateUrl: 'partials/timers/timers.html', controller: 'TimerListController'}).
     when('/debug', {templateUrl: 'partials/debug.html', controller: 'DebugController'}).
-    when('/timer/add', {templateUrl: 'partials/timer-form.html', controller: 'TimerFormController'}).
-    when('/timer/edit/:timerId', {templateUrl: 'partials/timer-form.html', controller: 'TimerFormController'}).
+    when('/timer/add', {templateUrl: 'partials/timers/timer-form.html', controller: 'TimerFormController'}).
+    when('/timer/:timerId/edit', {templateUrl: 'partials/timers/timer-form.html', controller: 'TimerFormController'}).
+    when('/timer/:timerId', {templateUrl: 'partials/timers/timer.html', controller: 'TimerViewController'}).
     otherwise({redirectTo: '/timers'});
 }]);

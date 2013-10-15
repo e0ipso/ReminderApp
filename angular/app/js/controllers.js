@@ -3,6 +3,9 @@
 /* Controllers */
 
 angular.module('reminderApp.controllers', ['ChromeStorageModule']).
+  config(['$compileProvider', function( $compileProvider ) {
+    $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|chrome-extension):/);
+  }]).
   controller('TimerFormController', ['$scope', '$log', '$location', '$routeParams', 'timerService', function ($scope, $log, $location, $routeParams, timerService) {
     // Assume this is a new record
     $scope.editing = false;
@@ -14,7 +17,7 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule']).
           // TODO: Provide feedback if everything works.
           // Save it using the timer service.
           timerService.set(key, timer).then(function () {
-            $location.path('/timers').replace();
+            $location.path('/timer/' + timer.id).replace();
           });
         };
       // If the timer is a promise (when editing) we need to wait for the promise to fulfill.
@@ -43,7 +46,6 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule']).
       });
     }
 
-    $scope.title = 'Add Timer';
     // Set the default value.
     if ($routeParams.timerId) {
       $scope.timer = timerService.get($routeParams.timerId);
@@ -58,6 +60,7 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule']).
         fromTime: '',
         toTime: ''
       };
+      $scope.title = 'Add Timer';
     }
 
     // Create ID dynamically.
@@ -70,11 +73,6 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule']).
     });
   }]).
   controller('TimerListController', ['$scope', '$location', 'timerService', function($scope, $location, timerService) {
-    // Manual routing due to CSP
-    $scope.editTimerForm = function (id) {
-      $location.path('/timer/edit/' + id);
-    }
-
     // Get the available timers.
     $scope.timers = {};
     $scope.timers = timerService.all();
@@ -88,4 +86,10 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule']).
       $window.close();
     };
     $scope.appName = chrome.i18n.getMessage('appName');
+  }])
+  .controller('TimerViewController', ['$scope', '$routeParams', 'timerService', function ($scope, $routeParams, timerService) {
+    $scope.timer = timerService.get($routeParams.timerId);
+    $scope.timer.then(function (timer) {
+      $scope.status = timerService.getStatus(timer);
+    });
   }]);

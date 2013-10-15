@@ -18,10 +18,10 @@
 
 <p ng-show="!timers">There are no timers to show. Please add timers.</p>
 <p ng-show="timers">
-  <ul>
-    <li ng-repeat="timer in timers" ng-show="timers">
-      <p><a class="timer-edit-link" ng-click="editTimerForm('{{ timer.id }}')"><span class="glyphicon glyphicon-edit"></span></a> <em>{{ timer.name }}</em> repeated every {{ timer.frequency | timeUnits }} from {{ timer.fromTime }} to {{ timer.toTime }}.</p>
-      <small class="description">{{ timer.description }}</small>
+  <ul class="list-group">
+    <li class="list-group-item" ng-repeat="timer in timers" ng-show="timers">
+      <h4 class="list-group-item-heading"><a class="timer-edit-link pull-right" ng-href="#/timer/{{ timer.id }}/edit" title="Edit this timer"><span class="glyphicon glyphicon-edit"></span></a> <em><a ng-href="#/timer/{{ timer.id }}" title="See this timer">{{ timer.name }}</a></em> repeated every {{ timer.frequency | timeUnits }} from {{ timer.fromTime }} to {{ timer.toTime }}.</h4>
+      <p class="list-group-item-text">{{ timer.description }}</p>
     </li>
   </ul>
 </p>
