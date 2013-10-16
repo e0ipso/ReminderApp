@@ -13,6 +13,108 @@ angular.module('reminderApp.services', ['ChromeStorageModule']).
     if (timerPrefix.substr(-1) !== '.') {
       timerPrefix = !!timerPrefix ? timerPrefix + '.' : '';
     }
+    function Timer(object) {
+      this.init(object);
+      // Get all the alarms filtered by the timerPrefix.
+      var alarmNames = [];
+      chrome.alarms.getAll(function (alarms) {
+        for (var index = alarms.length - 1; index >= 0; index--) {
+          if (alarms[index].name.indexOf(timerPrefix) == 0) {
+            alarmNames.push(alarms[index].name);
+          }
+        }
+      });
+      this.alarmNames = alarmNames;
+    }
+
+    Timer.prototype.init = function (object) {
+      for (var key in object) {
+        this[key] = object[key];
+      }
+    };
+
+    /**
+     * Get the status of the timer based on the current time.
+     *
+     * @returns {string}
+     */
+    Timer.prototype.getStatus = function () {
+      var from = this.fromTime, to = this.toTime;
+      if (from >= to) {
+        return 'error';
+      }
+      else {
+        var now = new Date(), nowTime;
+        nowTime = now.getHours() + ':' + now.getMinutes();
+        if (from < nowTime && nowTime < to) {
+          return 'active';
+        }
+        return 'inactive';
+      }
+    };
+
+    /**
+     * Get the alarm bound to this timer (if any).
+     *
+     * return Alarm
+     *   Return (a promise of) the alarm or false if there is none.
+     */
+    Timer.prototype.getAlarm = function () {
+      var deferred = $q.defer(),
+        alarmName = timerPrefix + this.id;
+      if (this.hasAlarm()) {
+        chrome.alarms.get(alarmName, function (alarm) {
+          deferred.resolve(alarm);
+        });
+      }
+      else {
+        deferred.reject('The alarm ' + alarmName + ' was not found.');
+      }
+      return deferred.promise;
+    }
+
+    /**
+     * Check if this timer has an associated alarm in the system.
+     *
+     * @return bool
+     *   TRUE if the alarm was registered.
+     */
+    Timer.prototype.hasAlarm = function () {
+      var alarmName = timerPrefix + this.id;
+      return this.alarmNames.indexOf(alarmName) != -1;
+    }
+
+    /**
+     * Set alarm for the timer.
+     */
+    Timer.prototype.setAlarm = function () {
+      // Check if the timer is active or inactive
+      switch (this.getStatus()) {
+        case 'active':
+          // Set the alarm and make it repeat forever. We will need to make
+          // sure we disable the alarm when to match the from/to
+          // constraints.
+          this.alarm = chrome.alarms.create(timerPrefix + this.id, {
+            periodInMinutes: this.frequency
+          });
+          break;
+        case 'inactive':
+          // If the alarm is inactive then set the first to the fromTime and
+          // then repeat frequency.
+          var startTime = new Date(),
+            parts = this.fromTime.split(':');
+          startTime.setHours(parts[0]);
+          startTime.setMinutes(parts[1]);
+          startTime.setSeconds('00');
+          this.alarm = chrome.alarms.create(timerPrefix + this.id, {
+            when: startTime.getTime(),
+            periodInMinutes: this.frequency
+          });
+          break;
+        default:
+          break;
+      }
+    }
 
     return {
       get: function (key) {
@@ -45,25 +147,8 @@ angular.module('reminderApp.services', ['ChromeStorageModule']).
 
         return storage.remove(keys);
       },
-      /**
-       * Get the status of the timer based on the current time.
-       *
-       * @param timer
-       * @returns {string}
-       */
-      getStatus: function (timer) {
-        var from = timer.fromTime, to = timer.toTime;
-        if (from >= to) {
-          return 'error';
-        }
-        else {
-          var now = new Date(), nowTime;
-          nowTime = now.getHours() + ':' + now.getMinutes();
-          if (from < nowTime && nowTime < to) {
-            return 'active';
-          }
-          return 'inactive';
-        }
+      create: function (object) {
+        return new Timer(object);
       }
     };
   }]);

@@ -90,6 +90,19 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule']).
   .controller('TimerViewController', ['$scope', '$routeParams', 'timerService', function ($scope, $routeParams, timerService) {
     $scope.timer = timerService.get($routeParams.timerId);
     $scope.timer.then(function (timer) {
-      $scope.status = timerService.getStatus(timer);
+      $scope.status = timerService.create(timer).getStatus();
+    });
+  }])
+  .controller('backgroundController', ['$log', 'timerService', function ($log, timerService) {
+    var timerData = timerService.all();
+    timerData.then(function (data) {
+      for (var key in data) {
+        var timer = timerService.create(data[key]);
+        // Check if there's an alarm attached to the timer. Only act if there
+        // are no alarms.
+        if (!timer.hasAlarm()) {
+          timer.setAlarm();
+        }
+      }
     });
   }]);

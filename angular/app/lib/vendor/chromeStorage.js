@@ -4,20 +4,20 @@
 var chromeStorage = angular.module('ChromeStorageModule', []);
 
 // You should set a prefix to avoid overwriting any storage variables from the rest of your app
-// e.g. chromeStorage.constant('prefix', 'youAppName');
-chromeStorage.value('prefix', 'cs');
+// e.g. chromeStorage.constant('chromeStoragePrefix', 'youAppName');
+chromeStorage.value('chromeStoragePrefix', 'cs');
 chromeStorage.value('namespace', 'sync'); // sync vs. local
 
 // Define a service to inject.
 chromeStorage.service('chromeStorageService', [
   '$rootScope',
   '$q',
-  'prefix',
+  'chromeStoragePrefix',
   'namespace',
-  function ($rootScope, $q, prefix, namespace) {
+  function ($rootScope, $q, chromeStoragePrefix, namespace) {
     // If there is a prefix set in the config lets use that with an appended period for readability
-    if (prefix.substr(-1)!=='.') {
-      prefix = !!prefix ? prefix + '.' : '';
+    if (chromeStoragePrefix.substr(-1)!=='.') {
+      chromeStoragePrefix = !!chromeStoragePrefix ? chromeStoragePrefix + '.' : '';
     }
 
     var storage = null;
@@ -56,7 +56,7 @@ chromeStorage.service('chromeStorageService', [
       var deferred = $q.defer();
 
       var object = {};
-      object[prefix + key] = value;
+      object[chromeStoragePrefix + key] = value;
       storage.set(object, function () {
         if (chrome.runtime.lastError) {
           deferred.reject(chrome.runtime.lastError.message);
@@ -82,7 +82,7 @@ chromeStorage.service('chromeStorageService', [
       // Create the deferred object.
       var deferred = $q.defer();
 
-      storage.get(prefix + key, function (data) {
+      storage.get(chromeStoragePrefix + key, function (data) {
         var value = data[key];
         if (chrome.runtime.lastError) {
           deferred.reject(chrome.runtime.lastError.message);
@@ -123,7 +123,7 @@ chromeStorage.service('chromeStorageService', [
             var values = {};
             for(var key in data) {
               // Check if the variable is from this service.
-              if (key.indexOf(prefix) == 0) {
+              if (key.indexOf(chromeStoragePrefix) == 0) {
                 values[key] = data[key];
               }
             }
@@ -134,7 +134,7 @@ chromeStorage.service('chromeStorageService', [
       else {
         // Prefix all variables prior to query.
         keys = keys.map(function (item) {
-          return prefix + item;
+          return chromeStoragePrefix + item;
         });
         storage.get(keys, function (data) {
           if (chrome.runtime.lastError) {
@@ -164,7 +164,7 @@ chromeStorage.service('chromeStorageService', [
 
       // Prefix all variables prior to deletion.
       keys = keys.map(function (item) {
-        return prefix + item;
+        return chromeStoragePrefix + item;
       });
       storage.remove(keys, function () {
         if (chrome.runtime.lastError) {
