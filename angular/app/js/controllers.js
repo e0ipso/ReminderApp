@@ -17,6 +17,15 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule']).
           // TODO: Provide feedback if everything works.
           // Save it using the timer service.
           timerService.set(key, timer).then(function () {
+            // Since the logic for the timer may have been changed, remove the
+            // associated alarms and recreate them.
+            var timerObject = timerService.create(timer);
+            if (timerObject.hasAlarm()) {
+              // Remove the alarm.
+              timerObject.removeAlarm();
+              // Create the alarm again.
+              timerObject.createAlarm();
+            }
             $location.path('/timer/' + timer.id).replace();
           });
         };

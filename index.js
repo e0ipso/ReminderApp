@@ -58,6 +58,24 @@
         }, function (notificationId) {
           console.log('Notification created: %s', notificationId);
         });
+        // Check if this alarm should keep going or we should pause it until
+        // tomorrow.
+        var nextAlarm = new Date(alarm.scheduledTime);
+        if (nextAlarm.getHours() + ':' + nextAlarm.getMinutes() > timer.toTime) {
+          // Set the date to tomorrow
+          var tomorrow = new Date(),
+            parts = timer.fromTime.split(':');
+          tomorrow.setTime(new Date().getTime() +  (24 * 60 * 60 * 1000));
+          // Now modify the hours and minutes.
+          tomorrow.setHours(parts[0]);
+          tomorrow.setMinutes(parts[1]);
+          // Set the alarm for tomorrow at the start time.
+          chrome.alarms.clear(alarm.name);
+          chrome.alarms.create(alarm.name, {
+            when: tomorrow.getTime(),
+            periodInMinutes: alarm.periodInMinutes
+          });
+        }
       });
     }
   });

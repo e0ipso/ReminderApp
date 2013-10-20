@@ -71,7 +71,7 @@ angular.module('reminderApp.services', ['ChromeStorageModule']).
         deferred.reject('The alarm ' + alarmName + ' was not found.');
       }
       return deferred.promise;
-    }
+    };
 
     /**
      * Check if this timer has an associated alarm in the system.
@@ -82,7 +82,7 @@ angular.module('reminderApp.services', ['ChromeStorageModule']).
     Timer.prototype.hasAlarm = function () {
       var alarmName = timerPrefix + this.id;
       return this.alarmNames.indexOf(alarmName) != -1;
-    }
+    };
 
     /**
      * Set alarm for the timer.
@@ -114,7 +114,15 @@ angular.module('reminderApp.services', ['ChromeStorageModule']).
         default:
           break;
       }
-    }
+    };
+
+    /**
+     * Remove the alarm for the current timer.
+     */
+    Timer.prototype.removeAlarm = function () {
+      var alarmName = timerPrefix + this.id;
+      chrome.alarms.clear(alarmName);
+    };
 
     return {
       get: function (key) {
