@@ -102,6 +102,9 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule']).
       $scope.status = timerService.create(timer).getStatus();
     });
   }])
+  .controller('ProfileViewController', ['$scope', 'profileService', function ($scope, profileService) {
+    $scope.profile = profileService.get();
+  }])
   .controller('backgroundController', ['$log', 'timerService', function ($log, timerService) {
     var timerData = timerService.all();
     timerData.then(function (data) {

@@ -16,5 +16,6 @@ config(['$routeProvider', function($routeProvider) {
     when('/timer/add', {templateUrl: 'partials/timers/timer-form.html', controller: 'TimerFormController'}).
     when('/timer/:timerId/edit', {templateUrl: 'partials/timers/timer-form.html', controller: 'TimerFormController'}).
     when('/timer/:timerId', {templateUrl: 'partials/timers/timer.html', controller: 'TimerViewController'}).
+    when('/profile', {templateUrl: 'partials/profile/profile.html', controller: 'ProfileViewController'}).
     otherwise({redirectTo: '/timers'});
 }]);
