@@ -8,7 +8,9 @@ angular.module('reminderApp', [
   'reminderApp.services',
   'reminderApp.directives',
   'reminderApp.debug.controllers', // TODO: Remove this one on production.
-  'reminderApp.controllers'
+  'reminderApp.controllers',
+  'ui-gravatar',
+  'md5'
 ]).
 config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/timers', {templateUrl: 'partials/timers/timers.html', controller: 'TimerListController'}).

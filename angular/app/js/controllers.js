@@ -5,6 +5,7 @@
 angular.module('reminderApp.controllers', ['ChromeStorageModule']).
   config(['$compileProvider', function( $compileProvider ) {
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|chrome-extension):/);
+    $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|mailto|chrome-extension|blob):/);
   }]).
   controller('TimerFormController', ['$scope', '$log', '$location', '$routeParams', 'timerService', function ($scope, $log, $location, $routeParams, timerService) {
     // Assume this is a new record
@@ -104,8 +105,22 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule']).
     });
     $scope.saveSuccess = typeof $location.search()['saved'] && $location.search()['saved'];
   }])
-  .controller('ProfileViewController', ['$scope', '$location', 'profileService', function ($scope, $location, profileService) {
+  .controller('ProfileViewController', ['$scope', '$location', '$q', 'gravatarImageService', 'profileService', function ($scope, $location, $q, gravatarImageService, profileService) {
     $scope.profile = profileService.get();
+    $scope.profile.then(function (profile) {
+      var xhr = new XMLHttpRequest(),
+        src = gravatarImageService.getImageSrc(profile.mail, 60, '', chrome.runtime.getURL('/angular/app/img/bell.png'), true),
+        deferred = $q.defer();
+      xhr.open('GET', src, true);
+      xhr.responseType = 'blob';
+
+      xhr.onload = function(e) {
+        deferred.resolve(window.webkitURL.createObjectURL(this.response));
+      };
+
+      xhr.send();
+      $scope.gravatarSrc = deferred.promise;
+    });
     $scope.saveSuccess = typeof $location.search()['saved'] && $location.search()['saved'];
   }])
   .controller('ProfileFormController', ['$scope', '$location', 'profileService', function ($scope, $location, profileService) {
@@ -127,7 +142,7 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule']).
             $location.path('/profile').search({saved: true});
           }, function (reason) {
             $location.path('/timer/' + timer.id).search({saved: false, reason: reason});
-          });
+          }); // TODO: Error handling for the services and alert messages when error.
         };
       // If the profile is a promise (when editing) we need to wait for the promise to fulfill.
       // To do so, test if the property 'then' is defined.

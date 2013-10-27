@@ -19,3 +19,13 @@ a.close-link {
 .list-group-item:hover .timer-edit-link .glyphicon {
   opacity: 1;
 }
+
+.circular-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
+  -webkit-border-radius: 30px;
+  overflow: hidden;
+  display: inline-block;
+  margin-bottom: -15px;
+}
