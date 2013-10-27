@@ -1,5 +1,5 @@
 <div class="page-header">
-  <h1><div class="circular-avatar"><img ng-src="{{ gravatarSrc }}" alt="Avatar" ng-show="profile.mail"/></div><span class="glyphicon glyphicon-user" ng-show="!profile.mail"></span> {{ profile.name || 'Empty name' }}. <small>{{ profile.punch || 'Empty punch line' }}</small> <a class="btn btn-default" href="#/profile/edit">Edit</a></h1>
+  <h1><div class="circular-avatar"><img ng-src="{{ gravatarSrc }}" alt="Avatar" ng-show="gravatarSrc"/></div><span class="glyphicon glyphicon-user" ng-show="!gravatarSrc"></span> {{ profile.name || 'Empty name' }}. <small>{{ profile.punch || 'Empty punch line' }}</small> <a class="btn btn-default" href="#/profile/edit">Edit</a></h1>
 </div>
 
 <div class="alert alert-success fade in" ng-show="saveSuccess">
