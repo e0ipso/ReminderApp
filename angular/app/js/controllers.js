@@ -105,6 +105,53 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule']).
   .controller('ProfileViewController', ['$scope', 'profileService', function ($scope, profileService) {
     $scope.profile = profileService.get();
   }])
+  .controller('ProfileFormController', ['$scope', '$location', 'profileService', function ($scope, $location, profileService) {
+    // Assume that there is no profile data stored.
+    $scope.editing = false;
+    $scope.profile = profileService.get();
+    $scope.profile.then(function (data) {
+      // If there is profile data set the editing variable to true.
+      if (typeof data.name != 'undefined') {
+        $scope.editing = true;
+      }
+    });
+    // Scope function to create/update profile data.
+    $scope.saveProfile = function () {
+      var profile,
+        save = function (profile) {
+          // Save it using the profile service.
+          profileService.set(profile).then(function () {
+            $location.path('/profile').replace();
+          });
+        };
+      // If the profile is a promise (when editing) we need to wait for the promise to fulfill.
+      // To do so, test if the property 'then' is defined.
+      // TODO: Check if this is a good practise.
+      if ($scope.profile.hasOwnProperty('then')) {
+        $scope.profile.then(function (data) {
+          save(data);
+        });
+      }
+      else {
+        save($scope.profile);
+      }
+    }
+    // Scope function to show the clear modal.
+    $scope.showClearProfileModal = function () {
+      jQuery('#deleteModal').modal('show');
+    };
+    // Scope function to actually clear the profile data.
+    $scope.clearProfile = function () {
+      // Assume we have a promise, since this will only be called from the editing form.
+      $scope.profile.then(function (data) {
+        profileService.remove().then(function () {
+          jQuery('#deleteModal').modal('hide');
+          $location.path('/profile');
+        });
+      });
+    }
+
+  }])
   .controller('backgroundController', ['$log', 'timerService', function ($log, timerService) {
     var timerData = timerService.all();
     timerData.then(function (data) {

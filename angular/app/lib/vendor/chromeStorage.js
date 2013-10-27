@@ -237,9 +237,10 @@ chromeStorage.
       });
     };
     ChromeStorage.prototype.remove = function (keys) {
+      var prefix = this.prefix;
       // Prefix all variables prior to deletion.
       keys = keys.map(function (item) {
-        return this.prefix + item;
+        return prefix + item;
       });
 
       return storage.remove(keys);

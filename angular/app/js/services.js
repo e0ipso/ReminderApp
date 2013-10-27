@@ -146,7 +146,7 @@ angular.module('reminderApp.services', ['ChromeStorageModule']).
         return profileStorage.set('profile', profileObject);
       },
       remove: function (profileObject) {
-        return profileStorage.remove('profile');
+        return profileStorage.remove(['profile']);
       }
     };
   }]);
