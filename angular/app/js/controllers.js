@@ -14,7 +14,6 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule']).
       var timer,
         save = function (timer) {
           var key = timer.id;
-          // TODO: Provide feedback if everything works.
           // Save it using the timer service.
           timerService.set(key, timer).then(function () {
             // Since the logic for the timer may have been changed, remove the
@@ -26,7 +25,9 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule']).
               // Create the alarm again.
               timerObject.createAlarm();
             }
-            $location.path('/timer/' + timer.id).replace();
+            $location.path('/timer/' + timer.id).search({saved: true});
+          }, function (reason) {
+            $location.path('/timer/' + timer.id).search({saved: false, reason: reason});
           });
         };
       // If the timer is a promise (when editing) we need to wait for the promise to fulfill.
@@ -96,14 +97,16 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule']).
     };
     $scope.appName = chrome.i18n.getMessage('appName');
   }])
-  .controller('TimerViewController', ['$scope', '$routeParams', 'timerService', function ($scope, $routeParams, timerService) {
+  .controller('TimerViewController', ['$scope', '$routeParams', '$location', 'timerService', function ($scope, $routeParams, $location, timerService) {
     $scope.timer = timerService.get($routeParams.timerId);
     $scope.timer.then(function (timer) {
       $scope.status = timerService.create(timer).getStatus();
     });
+    $scope.saveSuccess = typeof $location.search()['saved'] && $location.search()['saved'];
   }])
-  .controller('ProfileViewController', ['$scope', 'profileService', function ($scope, profileService) {
+  .controller('ProfileViewController', ['$scope', '$location', 'profileService', function ($scope, $location, profileService) {
     $scope.profile = profileService.get();
+    $scope.saveSuccess = typeof $location.search()['saved'] && $location.search()['saved'];
   }])
   .controller('ProfileFormController', ['$scope', '$location', 'profileService', function ($scope, $location, profileService) {
     // Assume that there is no profile data stored.
@@ -121,7 +124,9 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule']).
         save = function (profile) {
           // Save it using the profile service.
           profileService.set(profile).then(function () {
-            $location.path('/profile').replace();
+            $location.path('/profile').search({saved: true});
+          }, function (reason) {
+            $location.path('/timer/' + timer.id).search({saved: false, reason: reason});
           });
         };
       // If the profile is a promise (when editing) we need to wait for the promise to fulfill.
