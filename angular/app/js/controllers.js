@@ -172,6 +172,9 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule']).
     }
 
   }])
+  .controller('ReminderFormController', ['$log', 'ReminderProviderTypesService', function ($log, providerTypes) {
+    $log.debug(providerTypes);
+  }])
   .controller('backgroundController', ['$log', 'timerService', function ($log, timerService) {
     var timerData = timerService.all();
     timerData.then(function (data) {

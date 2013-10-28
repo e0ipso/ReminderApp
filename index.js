@@ -20,6 +20,8 @@
 
   var notificationIndex = 0; // TODO: Globals are evil, can we do this better?
 
+  // TODO: Remove all alarms on unload (e.g. when closig/reloading app).
+
   /**
    * The following code is in charge of receiving alarm events, making sure they
    * belong to timer timeouts and then firing the notification. This code needs

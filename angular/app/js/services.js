@@ -9,7 +9,7 @@ angular.module('reminderApp.services', ['ChromeStorageModule']).
   value('version', '0.1').
   value('timerPrefix', 'timer').
   value('profilePrefix', 'profile').
-  factory('timerService', ['$q', 'namespacedChromeStorageService', 'timerPrefix', function($q, namespacedStorage, timerPrefix) {
+  factory('timerService', ['$q', 'namespacedChromeStorageService', 'timerPrefix', function($q, NamespacedStorage, timerPrefix) {
     // If there is a prefix set in the config lets use that with an appended period for readability
     if (timerPrefix.substr(-1) !== '.') {
       timerPrefix = !!timerPrefix ? timerPrefix + '.' : '';
@@ -125,19 +125,19 @@ angular.module('reminderApp.services', ['ChromeStorageModule']).
       chrome.alarms.clear(alarmName);
     };
 
-    var timerStorage = namespacedStorage(timerPrefix);
+    var timerStorage = NamespacedStorage(timerPrefix);
     timerStorage.create = function (object) {
       return new Timer(object);
     };
 
     return timerStorage;
   }]).
-  service('profileService', ['$q', 'namespacedChromeStorageService', 'profilePrefix', function($q, storage, prefix) {
+  service('profileService', ['$q', 'namespacedChromeStorageService', 'profilePrefix', function($q, NamespacedStorage, prefix) {
     // If there is a prefix set in the config lets use that with an appended period for readability
     if (prefix.substr(-1) !== '.') {
       prefix = !!prefix ? prefix + '.' : '';
     }
-    var profileStorage = storage(prefix);
+    var profileStorage = NamespacedStorage(prefix);
     return {
       get: function () {
         return profileStorage.get('profile');
