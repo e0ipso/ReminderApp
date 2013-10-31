@@ -41,21 +41,21 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule']).
       else {
         save($scope.timer);
       }
-    }
+    };
 
     // Delete timers
     $scope.showDeleteTimerModal = function () {
-      jQuery('#deleteModal').modal('show');
+      $('#deleteModal').modal('show');
     };
     $scope.deleteTimer = function () {
       // Assume we have a promise, since this will only be called from the editing form.
       $scope.timer.then(function (data) {
         timerService.remove([data.id]).then(function () {
-          jQuery('#deleteModal').modal('hide');
+          $('#deleteModal').modal('hide');
           $location.path('/timers');
         });
       });
-    }
+    };
 
     // Set the default value.
     if ($routeParams.timerId) {
@@ -155,25 +155,30 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule']).
       else {
         save($scope.profile);
       }
-    }
+    };
     // Scope function to show the clear modal.
     $scope.showClearProfileModal = function () {
-      jQuery('#deleteModal').modal('show');
+      $('#deleteModal').modal('show');
     };
     // Scope function to actually clear the profile data.
     $scope.clearProfile = function () {
       // Assume we have a promise, since this will only be called from the editing form.
       $scope.profile.then(function (data) {
         profileService.remove().then(function () {
-          jQuery('#deleteModal').modal('hide');
+          $('#deleteModal').modal('hide');
           $location.path('/profile');
         });
       });
     }
 
   }])
-  .controller('ReminderFormController', ['$log', 'ReminderProviderTypesService', function ($log, providerTypes) {
-    $log.debug(providerTypes);
+  .controller('ReminderFormController', ['$scope', '$routeParams', '$log', '$timeout', 'timerService', 'ReminderProviderTypesService', function ($scope, $routeParams, $log, $timeout, timerService, providerTypes) {
+    $scope.timer = timerService.get($routeParams.timerId);
+    $scope.providers = providerTypes.list;
+    // Initialize popover
+    angular.element(document).ready(function () {
+      $('.panel-action').popover();
+    });
   }])
   .controller('backgroundController', ['$log', 'timerService', function ($log, timerService) {
     var timerData = timerService.all();

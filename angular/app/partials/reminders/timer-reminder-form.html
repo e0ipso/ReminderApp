@@ -1,0 +1,28 @@
+<div class="page-header">
+  <h1><span class="glyphicon glyphicon-time"></span> Reminders for <em>{{ timer.name }}</em>. <small>Attach actions to your timer.</small></h1>
+</div>
+
+<div class="row" id="reminder-providers">
+  <div class="col-md-4" ng-repeat="provider in providers">
+    <h2>{{ provider.title }}</h2>
+    <p>{{ provider.description }}</p>
+    <div class="row" ng-repeat="action in provider.actions">
+      <div class="col-md-12">
+        <div class="panel panel-primary panel-action" ng-class="{true: 'panel-success', false: 'panel-danger'}[provider.valid()]" id="panel-action-{{ action.id }}" data-title="Help" data-toggle="popover" data-content="This is an action type. Click the <strong>Attach</strong> button to create an action of this type and bind it to your timer." data-trigger="hover" data-delay="1000" data-html="true">
+          <div class="panel-heading">
+            <h3 class="panel-title">{{ action.title }}</h3>
+          </div>
+          <table class="table">
+            <tr><th>Description</th><td>{{ action.description }}</td></tr>
+            <tr><th>ID</th><td>{{ action.id }}</td></tr>
+            <tr><th>Actions</th><td><a href="" class="btn btn-info">Attach</a></td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-8" id="action-form">
+    <em>Select an action to configure it.</em>
+  </div>
+</div>
+

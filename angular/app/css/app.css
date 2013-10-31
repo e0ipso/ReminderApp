@@ -29,3 +29,7 @@ a.close-link {
   display: inline-block;
   margin-bottom: -15px;
 }
+
+#reminder-providers .popover {
+  width: 200px;
+}

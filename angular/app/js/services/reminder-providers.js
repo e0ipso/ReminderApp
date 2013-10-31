@@ -20,12 +20,26 @@ angular.module('reminderApp.reminderProviders', ['ChromeStorageModule']).
     RemiderProviderManager.prototype.type = 'text';
 
     /**
+     * @var string title
+     *   The human title for this provider.
+     */
+    RemiderProviderManager.prototype.title = '<empty>';
+
+    /**
+     * @var string description
+     *   Description of what this provider does.
+     */
+    RemiderProviderManager.prototype.description = '<empty>';
+
+    /**
      * @var array actions
      *   Array of objects containing all the actions available to the reminder.
      */
     RemiderProviderManager.prototype.actions = [{
       location: '#', // APP URI where to go on click.
-      title: '&lthan;empty&gthan;',
+      title: '<empty>',
+      id: '<empty>',
+      description: '<empty>',
       icon: '', // Image to load for the notification.
       options: {}, // An object with variables to set available to the scope.
       settings: {
@@ -86,9 +100,10 @@ angular.module('reminderApp.reminderProviders', ['ChromeStorageModule']).
    * it here and add it to the return object.
    */
   value('providerPrefix', 'provider').
-  service('ReminderProviderTypesService', ['ReminderProviderManagerService', 'namespacedChromeStorageService', function (ProviderManager, NamespacedStorage) {
+  service('ReminderProviderTypesService', ['ReminderProviderManagerService', 'namespacedChromeStorageService', 'providerPrefix', function (ProviderManager, NamespacedStorage, providerPrefix) {
     var providerList = [],
-      action,
+      basic = {},
+      configurable = {},
       actionCount = 0,
       storage = new NamespacedStorage(providerPrefix),
       provider = new ProviderManager();
@@ -97,49 +112,54 @@ angular.module('reminderApp.reminderProviders', ['ChromeStorageModule']).
      * overridable by custom configuration.
      */
     provider.type = 'text';
+    provider.title = 'Text reminders';
+    provider.description = 'Text reminders are simple reminders that will pop up a notification with some text in it.';
+    provider.actions = [];
     // Default action.
-    action.id = 'basic-notification';
-    action.location = '/reminder/' + provider.type;
-    action.title = 'Basic notification action';
-    action.icon = chrome.runtime.getURL('/angular/app/img/bell.png');
+    basic.id = 'basic-notification';
+    basic.description = 'The basic text notification will use the data stored in the timer to show the notification';
+    basic.location = '/reminder/' + provider.type;
+    basic.title = 'Basic notification action';
+    basic.icon = chrome.runtime.getURL('/angular/app/img/bell.png');
     // action.options = storage.get(provider.type + '.options');
-    action.options = null;
-    action.settings = null; // Since the data is fetched from the timer there is
+    basic.options = null;
+    basic.settings = null; // Since the data is fetched from the timer there is
                             // no configuration needed.
-    action.validAction = function (callback) {
+    basic.validAction = function (callback) {
       // This will be executed on runtime, after the action options have been
       // filled. Check if the action has the notification object in it.
       if (this.options != null && typeof this.options.notification != 'undefined') {
         callback(this, 'basic-notification');
       }
-    }
-    actionCount++;
-    provider.actions.push(action);
-    // Configurable action.
-    action.id = 'configurable-notification';
-    action.location = '/reminder/' + provider.type + '/' + action.id; // TODO: Set up the route to hold the reminder/text landing
-    action.title = 'Configurable notification action';
-    action.icon = chrome.runtime.getURL('/angular/app/img/bell.png');
-    action.options = null;
-    action.settings = {
-      formUri: '/reminder/settings/' + provider.type + '/' + action.id, // TODO: Set up the route to the configuration form.
-      variables: storage.get(provider.type + '.' + action.id + '.variables')
     };
-    action.validAction = function (callback) {
+    actionCount++;
+    provider.actions.push(basic);
+    // Configurable action.
+    configurable.id = 'configurable-notification';
+    configurable.description = 'The configurable text notification will display a notification with the data present in the settings for this action.';
+    configurable.location = '/reminder/' + provider.type + '/' + configurable.id; // TODO: Set up the route to hold the reminder/text landing
+    configurable.title = 'Configurable notification action';
+    configurable.icon = chrome.runtime.getURL('/angular/app/img/bell.png');
+    configurable.options = null;
+    configurable.settings = {
+      formUri: '/reminder/settings/' + provider.type + '/' + configurable.id, // TODO: Set up the route to the configuration form.
+      variables: storage.get(provider.type + '.' + configurable.id + '.variables')
+    };
+    configurable.validAction = function (callback) {
       // This will be executed on runtime, after the action options have been
       // filled. Check if the action has the notification object in it.
       if (this.options != null && typeof this.options.notification != 'undefined') {
         // Check if there is info set in the variable settings for this action.
         var reminderObject = this;
-        return this.settings.variables.then(function(data) {
+        this.settings.variables.then(function(data) {
           if (typeof data != 'undefined' && Object.keys(data).length !== 0) {
             callback(reminderObject, 'configurable-notification');
           }
         });
       }
-    }
+    };
     actionCount++;
-    provider.actions.push(action);
+    provider.actions.push(configurable);
     // provider.valid will be left as default.
     providerList.push(provider);
     return {

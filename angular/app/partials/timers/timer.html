@@ -4,7 +4,7 @@
 
 <div class="alert alert-success fade in" ng-show="saveSuccess">
   <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-  <strong>Your timer has been saved!</strong> You can start getting your remainders.
+  <strong>Your timer has been saved!</strong> You can start getting your reminders.
 </div>
 
 <div class="row">
@@ -31,11 +31,11 @@
         Actions <span class="caret"></span>
       </button>
       <ul class="dropdown-menu" role="menu">
-        <li><a href="#/timer/{{ timer.id }}/edit">Edit</a></li>
+        <li><a ng-href="#/timer/{{ timer.id }}/edit">Edit</a></li>
         <li><a href="#">Clone</a></li>
         <li><a href="#">Delete</a></li>
         <li class="divider"></li>
-        <li><a href="#">Bind a reminder</a></li>
+        <li><a ng-href="#/timer/{{ timer.id }}/reminders">Bind a reminder</a></li>
       </ul>
     </div>
   </div>
