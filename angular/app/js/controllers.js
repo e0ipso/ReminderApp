@@ -177,7 +177,7 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule']).
     $scope.providers = providerTypes.list;
     // Initialize popover
     angular.element(document).ready(function () {
-      $('.panel-action').popover();
+      $('.panel-action').popover(); // TODO: Change all jQuery calls to use jq-passthrough. @see: http://angular-ui.github.io/ui-utils/
     });
   }])
   .controller('backgroundController', ['$log', 'timerService', function ($log, timerService) {
