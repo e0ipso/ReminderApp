@@ -20,11 +20,11 @@
 <p ng-show="timers">
   <ul class="list-group">
     <li class="list-group-item" ng-repeat="timer in timers" ng-show="timers">
-      <h4 class="list-group-item-heading"><a class="timer-edit-link pull-right" ng-href="#/timer/{{ timer.id }}/edit" title="Edit this timer"><span class="glyphicon glyphicon-edit"></span></a> <em><a ng-href="#/timer/{{ timer.id }}" title="See this timer">{{ timer.name }}</a></em> repeated every {{ timer.frequency | timeUnits }} from {{ timer.fromTime }} to {{ timer.toTime }}.</h4>
+      <h4 class="list-group-item-heading"><a class="timer-edit-link pull-right" ui-sref="timers.detail.edit({ timerId: timer.id })" title="Edit this timer"><span class="glyphicon glyphicon-edit"></span></a> <em><a ui-sref="timers.detail.view({ timerId: timer.id })" title="See this timer">{{ timer.name }}</a></em> repeated every {{ timer.frequency | timeUnits }} from {{ timer.fromTime }} to {{ timer.toTime }}.</h4>
       <p class="list-group-item-text">{{ timer.description }}</p>
     </li>
   </ul>
 </p>
 <p>
-  <a href="#/timer/add" class="btn btn-primary"><span class="glyphicon glyphicon-plus-sign"></span> Add timer</a>
+  <a ui-sref="timers.add" class="btn btn-primary"><span class="glyphicon glyphicon-plus-sign"></span> Add timer</a>
 </p>

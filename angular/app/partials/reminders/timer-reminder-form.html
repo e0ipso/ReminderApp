@@ -15,13 +15,13 @@
           <table class="table">
             <tr><th>Description</th><td>{{ action.description }}</td></tr>
             <tr><th>ID</th><td>{{ action.id }}</td></tr>
-            <tr><th>Actions</th><td><a href="" class="btn btn-info">Attach</a></td></tr>
+            <tr><th>Actions</th><td><a ui-sref="home" class="btn btn-info">Attach</a></td></tr>
           </table>
         </div>
       </div>
     </div>
   </div>
-  <div class="col-md-8" id="action-form">
+  <div class="col-md-8" ui-view>
     <em>Select an action to configure it.</em>
   </div>
 </div>

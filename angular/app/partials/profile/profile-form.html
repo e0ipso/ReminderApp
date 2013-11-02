@@ -31,7 +31,7 @@
   <div class="form-group">
     <div class="col-sm-10 col-sm-offset-2">
       <div class="btn-group">
-        <a class="btn btn-default" ng-href="#/profile">Cancel</a>
+        <a class="btn btn-default" ui-sref="profile.view">Cancel</a>
         <button class="btn btn-danger" ng-click="showClearProfileModal()" ng-disabled="!editing">Clear profile</button>
         <button class="btn" ng-class="{true:'btn-default', false:'btn-success'}[form.$invalid]" ng-click="saveProfile();" ng-disabled="form.$invalid">Save profile</button>
       </div>

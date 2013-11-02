@@ -31,11 +31,11 @@
         Actions <span class="caret"></span>
       </button>
       <ul class="dropdown-menu" role="menu">
-        <li><a ng-href="#/timer/{{ timer.id }}/edit">Edit</a></li>
-        <li><a href="#">Clone</a></li>
-        <li><a href="#">Delete</a></li>
+        <li><a ui-sref="timers.detail.edit({ timerId: timer.id })">Edit</a></li>
+        <li><a ui-sref="home">Clone</a></li>
+        <li><a ui-sref="home">Delete</a></li> <!-- TODO: Make this to show a modal and not redirect to the homepage. -->
         <li class="divider"></li>
-        <li><a ng-href="#/timer/{{ timer.id }}/reminders">Bind a reminder</a></li>
+        <li><a ui-sref="timers.detail.reminders({ timerId: timer.id })">Bind a reminder</a></li>
       </ul>
     </div>
   </div>

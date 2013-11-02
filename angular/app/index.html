@@ -55,10 +55,10 @@
       </div><!--/.nav-collapse -->
     </div>
 
-    <div ng-view></div>
+    <section ui-view></section>
 
     <footer>
-      <p class="pull-right"><a href="#nav-container">Back to top</a></p>
+      <p class="pull-right">Fork, modify and have fun with the GitHub repository.</p>
       <p>ReminderApp v<span app-version></span> by Lullabot.</p>
     </footer>
   </div>
@@ -70,6 +70,7 @@
   <script src="lib/vendor/chromeStorage.js"></script>
   <script src="lib/vendor/gravatar-directive/gravatar-directive.js"></script>
   <script src="lib/vendor/gravatar-directive/md5-service.js"></script>
+  <script src="lib/vendor/angular-ui/angular-ui-router.js"></script> <!-- TODO: Change to minified version. -->
   <script src="js/app.js"></script>
   <script src="js/services.js"></script>
   <script src="js/controllers.js"></script>

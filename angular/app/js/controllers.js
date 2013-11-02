@@ -7,74 +7,58 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule']).
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|chrome-extension):/);
     $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|mailto|chrome-extension|blob):/);
   }]).
-  controller('TimerFormController', ['$scope', '$log', '$location', '$routeParams', 'timerService', function ($scope, $log, $location, $routeParams, timerService) {
+  controller('TimerFormController', ['$scope', '$log', '$state', 'timer', 'timerService', function ($scope, $log, $state, timer, timerService) {
     // Assume this is a new record
     $scope.editing = false;
     // Submit function.
     $scope.saveTimer = function () {
-      var timer,
-        save = function (timer) {
-          var key = timer.id;
-          // Save it using the timer service.
-          timerService.set(key, timer).then(function () {
-            // Since the logic for the timer may have been changed, remove the
-            // associated alarms and recreate them.
-            var timerObject = timerService.create(timer);
-            if (timerObject.hasAlarm()) {
-              // Remove the alarm.
-              timerObject.removeAlarm();
-              // Create the alarm again.
-              timerObject.createAlarm();
-            }
-            $location.path('/timer/' + timer.id).search({saved: true});
-          }, function (reason) {
-            $location.path('/timer/' + timer.id).search({saved: false, reason: reason});
-          });
-        };
-      // If the timer is a promise (when editing) we need to wait for the promise to fulfill.
-      // To do so, test if the property 'then' is defined.
-      if ($scope.timer.hasOwnProperty('then')) {
-        $scope.timer.then(function (data) {
-          save(data);
-        });
-      }
-      else {
-        save($scope.timer);
-      }
+      var key = $scope.timer.id;
+      // Save it using the timer service.
+      timerService.set(key, $scope.timer).then(function () {
+        // Since the logic for the timer may have been changed, remove the
+        // associated alarms and recreate them.
+        var timerObject = timerService.create($scope.timer);
+        if (timerObject.hasAlarm()) {
+          // Remove the alarm.
+          timerObject.removeAlarm();
+          // Create the alarm again.
+          timerObject.createAlarm();
+        }
+        if ($scope.editing) {
+          $state.go('^.view');
+        }
+        $state.go('^.detail.view', { timerId: $scope.timer.id });
+          // TODO: State alternative to query params => .search({saved: true});
+      }, function (reason) {
+        $state.go('home');
+          // TODO: State alternative to query params => .search({saved: false, reason: reason});
+      });
     };
 
     // Delete timers
     $scope.showDeleteTimerModal = function () {
       $('#deleteModal').modal('show');
     };
+    // Call the timerService to perform the actual deletion.
     $scope.deleteTimer = function () {
-      // Assume we have a promise, since this will only be called from the editing form.
-      $scope.timer.then(function (data) {
-        timerService.remove([data.id]).then(function () {
-          $('#deleteModal').modal('hide');
-          $location.path('/timers');
-        });
+      timerService.remove([timer.id]).then(function () {
+        $('#deleteModal').modal('hide');
+        $state.go('home');
       });
     };
 
+    $scope.timer = timer;
     // Set the default value.
-    if ($routeParams.timerId) {
-      $scope.timer = timerService.get($routeParams.timerId);
-      $scope.editing = true;
+    if (!timer.name) {
+      $scope.title = 'Add Timer';
     }
     else {
-      $scope.timer = {
-        name: '',
-        id: '',
-        description: '',
-        frequency: 0,
-        fromTime: '',
-        toTime: ''
-      };
-      $scope.title = 'Add Timer';
+      // If there is a default name for the timer then assume we're editing.
+      $scope.editing = true;
     }
 
     // Create ID dynamically.
+    // TODO: Could this be refactored into a filter?
     $scope.$watch('timer.name', function () {
       var id = $scope.timer.name;
       // If there's an id in the URL don't change it with the title.
@@ -83,7 +67,7 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule']).
       }
     });
   }]).
-  controller('TimerListController', ['$scope', '$location', 'timerService', function($scope, $location, timerService) {
+  controller('TimerListController', ['$scope', 'timerService', function($scope, timerService) {
     // Get the available timers.
     $scope.timers = {};
     $scope.timers = timerService.all();
@@ -98,18 +82,16 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule']).
     };
     $scope.appName = chrome.i18n.getMessage('appName');
   }])
-  .controller('TimerViewController', ['$scope', '$routeParams', '$location', 'timerService', function ($scope, $routeParams, $location, timerService) {
-    $scope.timer = timerService.get($routeParams.timerId);
-    $scope.timer.then(function (timer) {
-      $scope.status = timerService.create(timer).getStatus();
-    });
-    $scope.saveSuccess = typeof $location.search()['saved'] && $location.search()['saved'];
+  .controller('TimerViewController', ['$scope', '$routeParams', '$state', 'timer', 'timerService', function ($scope, $routeParams, $state, timer, timerService) {
+    $scope.timer = timer;
+    $scope.status = timerService.create(timer).getStatus();
+    // $scope.saveSuccess = typeof $state.search()['saved'] && $state.search()['saved']; TODO: Reimplement this using states.
   }])
-  .controller('ProfileViewController', ['$scope', '$location', '$q', 'gravatarImageService', 'profileService', function ($scope, $location, $q, gravatarImageService, profileService) {
-    $scope.profile = profileService.get();
-    $scope.profile.then(function (profile) {
+  .controller('ProfileViewController', ['$scope', '$state', '$q', 'gravatarImageService', 'profile', function ($scope, $state, $q, gravatarImageService, profile) {
+    $scope.profile = profile;
+    if ($scope.profile.mail) {
       var xhr = new XMLHttpRequest(),
-        src = gravatarImageService.getImageSrc(profile.mail, 60, '', chrome.runtime.getURL('/angular/app/img/bell.png'), true),
+        src = gravatarImageService.getImageSrc($scope.profile.mail, 60, '', chrome.runtime.getURL('/angular/app/img/bell.png'), true),
         deferred = $q.defer();
       xhr.open('GET', src, true);
       xhr.responseType = 'blob';
@@ -120,41 +102,27 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule']).
 
       xhr.send();
       $scope.gravatarSrc = deferred.promise;
-    });
-    $scope.saveSuccess = typeof $location.search()['saved'] && $location.search()['saved'];
+    }
+    // $scope.saveSuccess = typeof $state.search()['saved'] && $state.search()['saved']; TODO: Reimplement this using states.
   }])
-  .controller('ProfileFormController', ['$scope', '$location', 'profileService', function ($scope, $location, profileService) {
+  .controller('ProfileFormController', ['$scope', '$state', 'profile', 'profileService', function ($scope, $state,  profile, profileService) {
     // Assume that there is no profile data stored.
     $scope.editing = false;
-    $scope.profile = profileService.get();
-    $scope.profile.then(function (data) {
-      // If there is profile data set the editing variable to true.
-      if (typeof data.name != 'undefined') {
-        $scope.editing = true;
-      }
-    });
+    $scope.profile = profile;
+    // If there is profile data set the editing variable to true.
+    if (typeof $scope.profile.name != 'undefined') {
+      $scope.editing = true;
+    }
     // Scope function to create/update profile data.
     $scope.saveProfile = function () {
-      var profile,
-        save = function (profile) {
-          // Save it using the profile service.
-          profileService.set(profile).then(function () {
-            $location.path('/profile').search({saved: true});
-          }, function (reason) {
-            $location.path('/timer/' + timer.id).search({saved: false, reason: reason});
-          }); // TODO: Error handling for the services and alert messages when error.
-        };
-      // If the profile is a promise (when editing) we need to wait for the promise to fulfill.
-      // To do so, test if the property 'then' is defined.
-      // TODO: Check if this is a good practise.
-      if ($scope.profile.hasOwnProperty('then')) {
-        $scope.profile.then(function (data) {
-          save(data);
-        });
-      }
-      else {
-        save($scope.profile);
-      }
+      // Save it using the profile service.
+      profileService.set($scope.profile).then(function () {
+        $state.go('^.view');
+          // TODO: State alternative to query params => .search({saved: true});
+      }, function (reason) {
+        $state.go('^.view');
+          // TODO: State alternative to query params => .search({saved: false, reason: reason});
+      }); // TODO: Error handling for the services and alert messages when error.
     };
     // Scope function to show the clear modal.
     $scope.showClearProfileModal = function () {
@@ -163,18 +131,16 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule']).
     // Scope function to actually clear the profile data.
     $scope.clearProfile = function () {
       // Assume we have a promise, since this will only be called from the editing form.
-      $scope.profile.then(function (data) {
-        profileService.remove().then(function () {
-          $('#deleteModal').modal('hide');
-          $location.path('/profile');
-        });
+      profileService.remove().then(function () {
+        $('#deleteModal').modal('hide');
+        $state.go('home');
       });
     }
 
   }])
-  .controller('ReminderFormController', ['$scope', '$routeParams', '$log', '$timeout', 'timerService', 'ReminderProviderTypesService', function ($scope, $routeParams, $log, $timeout, timerService, providerTypes) {
-    $scope.timer = timerService.get($routeParams.timerId);
-    $scope.providers = providerTypes.list;
+  .controller('ReminderFormController', ['$scope', '$routeParams', '$log', '$timeout', 'timer', 'providers', function ($scope, $routeParams, $log, $timeout, timer, providers) {
+    $scope.timer = timer;
+    $scope.providers = providers;
     // Initialize popover
     angular.element(document).ready(function () {
       $('.panel-action').popover(); // TODO: Change all jQuery calls to use jq-passthrough. @see: http://angular-ui.github.io/ui-utils/

@@ -76,10 +76,10 @@ chromeStorage.
        *
        * @param key
        *   Name of the variable to get.
-       * @param callback
-       *   Assync function call.
+       * @return object
+       *   Promise object.
        */
-      var getStorage = function (key, callback) {
+      var getStorage = function (key) {
         // Create the deferred object.
         var deferred = $q.defer();
 

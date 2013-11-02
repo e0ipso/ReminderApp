@@ -39,7 +39,7 @@
   <div class="form-group">
     <div class="col-sm-10 col-sm-offset-2">
       <div class="btn-group">
-        <a class="btn btn-default" ng-href="#/timers">Cancel</a>
+        <a class="btn btn-default" ui-sref="home">Cancel</a>
         <button class="btn btn-danger" ng-click="showDeleteTimerModal()" ng-disabled="!editing">Delete timer</button>
         <button class="btn" ng-class="{true:'btn-default', false:'btn-success'}[form.$invalid]" ng-click="saveTimer();" ng-disabled="form.$invalid">Save timer</button>
       </div>
