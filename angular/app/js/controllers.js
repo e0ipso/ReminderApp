@@ -2,12 +2,12 @@
 
 /* Controllers */
 
-angular.module('reminderApp.controllers', ['ChromeStorageModule']).
+angular.module('reminderApp.controllers', ['ChromeStorageModule', 'MessageCenterModule']).
   config(['$compileProvider', function( $compileProvider ) {
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|chrome-extension):/);
     $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|mailto|chrome-extension|blob):/);
   }]).
-  controller('TimerFormController', ['$scope', '$log', '$state', 'timer', 'timerService', function ($scope, $log, $state, timer, timerService) {
+  controller('TimerFormController', ['$scope', '$log', '$state', 'timer', 'timerService', 'messageCenterService', function ($scope, $log, $state, timer, timerService, messageCenterService) {
     // Assume this is a new record
     $scope.editing = false;
     // Submit function.
@@ -24,14 +24,20 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule']).
           // Create the alarm again.
           timerObject.createAlarm();
         }
+        messageCenterService.add('success', 'Your timer has been successfully saved.');
         if ($scope.editing) {
           $state.go('^.view');
         }
-        $state.go('^.detail.view', { timerId: $scope.timer.id });
-          // TODO: State alternative to query params => .search({saved: true});
+        else {
+          $state.go('^.detail.view', { timerId: $scope.timer.id });
+        }
       }, function (reason) {
+        var message = 'Your timer could not be saved.';
+        if (reason) {
+          message += ' Reason: ' + reason;
+        }
+        messageCenterService.add('danger', message);
         $state.go('home');
-          // TODO: State alternative to query params => .search({saved: false, reason: reason});
       });
     };
 
@@ -85,7 +91,6 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule']).
   .controller('TimerViewController', ['$scope', '$routeParams', '$state', 'timer', 'timerService', function ($scope, $routeParams, $state, timer, timerService) {
     $scope.timer = timer;
     $scope.status = timerService.create(timer).getStatus();
-    // $scope.saveSuccess = typeof $state.search()['saved'] && $state.search()['saved']; TODO: Reimplement this using states.
   }])
   .controller('ProfileViewController', ['$scope', '$state', '$q', 'gravatarImageService', 'profile', function ($scope, $state, $q, gravatarImageService, profile) {
     $scope.profile = profile;
@@ -103,9 +108,8 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule']).
       xhr.send();
       $scope.gravatarSrc = deferred.promise;
     }
-    // $scope.saveSuccess = typeof $state.search()['saved'] && $state.search()['saved']; TODO: Reimplement this using states.
   }])
-  .controller('ProfileFormController', ['$scope', '$state', 'profile', 'profileService', function ($scope, $state,  profile, profileService) {
+  .controller('ProfileFormController', ['$scope', '$state', 'profile', 'profileService', 'messageCenterService', function ($scope, $state,  profile, profileService, messageCenterService) {
     // Assume that there is no profile data stored.
     $scope.editing = false;
     $scope.profile = profile;
@@ -117,11 +121,15 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule']).
     $scope.saveProfile = function () {
       // Save it using the profile service.
       profileService.set($scope.profile).then(function () {
+        messageCenterService.add('success', 'Your profile has been successfully updated.');
         $state.go('^.view');
-          // TODO: State alternative to query params => .search({saved: true});
       }, function (reason) {
+        var message = 'Your profile could not be updated.';
+        if (reason) {
+          message += ' Reason: ' + reason;
+        }
+        messageCenterService.add('danger', message);
         $state.go('^.view');
-          // TODO: State alternative to query params => .search({saved: false, reason: reason});
       }); // TODO: Error handling for the services and alert messages when error.
     };
     // Scope function to show the clear modal.

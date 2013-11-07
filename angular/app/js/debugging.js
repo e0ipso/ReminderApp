@@ -2,8 +2,8 @@
 
 /* Controllers */
 
-angular.module('reminderApp.debug.controllers', []).
-  controller('DebugController', ['$scope', '$log', '$location', function ($scope, $log, $location) {
+angular.module('reminderApp.debug.controllers', ['MessageCenterModule']).
+  controller('DebugController', ['$scope', '$log', '$location', 'messageCenterService', function ($scope, $log, $location, messageCenterService) {
     // Debug controller.
     var id = 0;
     $scope.notification = function () {
@@ -41,5 +41,13 @@ angular.module('reminderApp.debug.controllers', []).
       chrome.runtime.sendMessage(
         { uri: uri, action: 'openAppURI' }
       );
+    };
+    // Test the alert functionality.
+    messageCenterService.add('success', 'Testing alert.');
+    messageCenterService.add('info', 'Testing alert.');
+    messageCenterService.add('warning', 'Testing alert.');
+    messageCenterService.add('danger', 'Testing alert.');
+    $scope.clickedAlert = function () {
+      messageCenterService.add('warning', 'Clicked alert.');
     };
   }]);

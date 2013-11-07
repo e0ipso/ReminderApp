@@ -5,22 +5,11 @@ var MessageCenterModule = angular.module('MessageCenterModule', []);
 
 // Define a service to inject.
 MessageCenterModule.
-  factory('MessageCenterService', [
+  service('messageCenterService', [
     '$rootScope',
     function ($rootScope) {
-      $rootScope.mcMessages = [];
-      /**
-       * Return the constructor.
-       */
-      function MessageCenterService() {
-        // Remove all shown messages upon construction.
-        for (var index = $rootScope.mcMessages.length - 1; index >= 0; index--) {
-          if ($rootScope.mcMessages[index].status == 'shown') {
-            $rootScope.mcMessages.splice(index, 1);
-          }
-        }
-      }
-      MessageCenterService.prototype = {
+      $rootScope.mcMessages = $rootScope.mcMessages || [];
+      return {
         unseen: 'unseen',
         shown: 'shown',
         add: function (type, message) {
@@ -29,18 +18,18 @@ MessageCenterModule.
           if (availableTypes.indexOf(type) == -1) {
             throw "Invalid message type";
           }
-          return $rootScope.mcMessages.push({
+          $rootScope.mcMessages.push({
             type: type,
             message: message,
             status: this.unseen,
             close: function() {
-              return service.closeMessage(this);
+              return service.remove(this);
             }
           });
         },
         remove: function (message) {
           var index = $rootScope.mcMessages.indexOf(message);
-          return $rootScope.mcMessages.splice(index, 1);
+          $rootScope.mcMessages.splice(index, 1);
         },
         reset: function () {
           $rootScope.mcMessages = [];
@@ -60,11 +49,9 @@ MessageCenterModule.
           }
         }
       };
-      return MessageCenterService;
     }
   ]).
-  directive('mcMessages', ['$rootScope', 'MessageCenterService', function ($rootScope, MessageCenterService) {
-    var messages = new MessageCenterService();
+  directive('mcMessages', ['$rootScope', 'messageCenterService', function ($rootScope, messageCenterService) {
     return {
       restrict: 'EA',
       template: '\
@@ -78,10 +65,13 @@ MessageCenterModule.
       compile: function(element, attrs) {
         var changeReaction = function () {
           // Remove the messages that have been shown.
-          messages.removeShown();
+          messageCenterService.removeShown();
           // Update 'unseen' messages to be marked as 'shown'.
-          messages.markShown();
+          messageCenterService.markShown();
         };
+        $rootScope.$watch('mcMessages', function(newValue, oldValue) {
+          console.log(newValue);
+        });
         $rootScope.$on('$locationChangeSuccess', changeReaction);
         // If ui-router is enabled we need to do this.
         $rootScope.$on('$stateChangeSuccess', changeReaction);
