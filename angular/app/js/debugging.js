@@ -2,7 +2,7 @@
 
 /* Controllers */
 
-angular.module('reminderApp.debug.controllers', ['MessageCenterModule']).
+angular.module('reminderApp.debug.controllers', []).
   controller('DebugController', ['$scope', '$log', '$location', 'messageCenterService', function ($scope, $log, $location, messageCenterService) {
     // Debug controller.
     var id = 0;
@@ -48,6 +48,6 @@ angular.module('reminderApp.debug.controllers', ['MessageCenterModule']).
     messageCenterService.add('warning', 'Testing alert.');
     messageCenterService.add('danger', 'Testing alert.');
     $scope.clickedAlert = function () {
-      messageCenterService.add('warning', 'Clicked alert.');
+      messageCenterService.add('warning', 'Clicked permanent alert.', { status: messageCenterService.status.permanent });
     };
   }]);

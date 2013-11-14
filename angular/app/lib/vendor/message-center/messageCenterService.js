@@ -6,51 +6,68 @@ var MessageCenterModule = angular.module('MessageCenterModule', []);
 // Define a service to inject.
 MessageCenterModule.
   service('messageCenterService', [
-    '$rootScope',
-    function ($rootScope) {
-      $rootScope.mcMessages = $rootScope.mcMessages || [];
+    function () {
       return {
-        unseen: 'unseen',
-        shown: 'shown',
-        add: function (type, message) {
+        mcMessages: this.mcMessages || [],
+        status: {
+          unseen: 'unseen',
+          shown: 'shown',
+          /** @var Odds are that you will show a message and right after that
+           * change your route/state. If that happens your message will only be
+           * seen for a fraction of a second. To avoid that use the "next"
+           * status, that will make the message available to the next page */
+          next: 'next',
+          /** @var Do not delete this message automatically. */
+          permanent: 'permanent'
+        },
+        add: function (type, message, options) {
           var availableTypes = ['info', 'warning', 'danger', 'success'],
             service = this;
+          options = options || {};
           if (availableTypes.indexOf(type) == -1) {
             throw "Invalid message type";
           }
-          $rootScope.mcMessages.push({
+          this.mcMessages.push({
             type: type,
             message: message,
-            status: this.unseen,
+            status: options.status || this.status.unseen,
+            processed: false,
             close: function() {
               return service.remove(this);
             }
           });
         },
         remove: function (message) {
-          var index = $rootScope.mcMessages.indexOf(message);
-          $rootScope.mcMessages.splice(index, 1);
+          var index = this.mcMessages.indexOf(message);
+          this.mcMessages.splice(index, 1);
         },
         reset: function () {
-          $rootScope.mcMessages = [];
+          this.mcMessages = [];
         },
         removeShown: function () {
-          for (var index = $rootScope.mcMessages.length - 1; index >= 0; index--) {
-            if ($rootScope.mcMessages[index].status == this.shown) {
-              this.remove($rootScope.mcMessages[index]);
+          for (var index = this.mcMessages.length - 1; index >= 0; index--) {
+            if (this.mcMessages[index].status == this.status.shown) {
+              this.remove(this.mcMessages[index]);
             }
           }
         },
         markShown: function () {
-          for (var index = $rootScope.mcMessages.length - 1; index >= 0; index--) {
-            if ($rootScope.mcMessages[index].status == this.unseen) {
-              $rootScope.mcMessages[index].status = this.shown;
+          for (var index = this.mcMessages.length - 1; index >= 0; index--) {
+            if (!this.mcMessages[index].processed) {
+              if (this.mcMessages[index].status == this.status.unseen) {
+                this.mcMessages[index].status = this.status.shown;
+              }
+              else if (this.mcMessages[index].status == this.status.next) {
+                this.mcMessages[index].status = this.status.unseen;
+              }
+              this.mcMessages[index].processed = true;
             }
           }
         }
       };
     }
-  ]).
+  ]);
+MessageCenterModule.
   directive('mcMessages', ['$rootScope', 'messageCenterService', function ($rootScope, messageCenterService) {
     return {
       restrict: 'EA',
@@ -62,19 +79,15 @@ MessageCenterModule.
         </div>\
       </div>\
       ',
-      compile: function(element, attrs) {
-        var changeReaction = function () {
-          // Remove the messages that have been shown.
-          messageCenterService.removeShown();
+      link: function(scope, element, attrs) {
+        var changeReaction = function (event, to, from) {
           // Update 'unseen' messages to be marked as 'shown'.
           messageCenterService.markShown();
+          // Remove the messages that have been shown.
+          messageCenterService.removeShown();
+          $rootScope.mcMessages = messageCenterService.mcMessages;
         };
-        $rootScope.$watch('mcMessages', function(newValue, oldValue) {
-          console.log(newValue);
-        });
-        $rootScope.$on('$locationChangeSuccess', changeReaction);
-        // If ui-router is enabled we need to do this.
-        $rootScope.$on('$stateChangeSuccess', changeReaction);
+        $rootScope.$on('$locationChangeStart', changeReaction);
       }
     };
   }]);

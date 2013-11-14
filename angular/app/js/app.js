@@ -12,6 +12,7 @@ angular.module('reminderApp', [
   'reminderApp.reminderProviders',
   'ui-gravatar',
   'md5',
+  'MessageCenterModule',
   'ui.router'
 ]).
 config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {

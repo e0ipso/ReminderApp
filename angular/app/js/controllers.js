@@ -2,7 +2,7 @@
 
 /* Controllers */
 
-angular.module('reminderApp.controllers', ['ChromeStorageModule', 'MessageCenterModule']).
+angular.module('reminderApp.controllers', ['ChromeStorageModule']).
   config(['$compileProvider', function( $compileProvider ) {
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|chrome-extension):/);
     $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|mailto|chrome-extension|blob):/);
@@ -24,7 +24,7 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule', 'MessageCenter
           // Create the alarm again.
           timerObject.createAlarm();
         }
-        messageCenterService.add('success', 'Your timer has been successfully saved.');
+        messageCenterService.add('success', 'Your timer has been successfully saved.', { status: messageCenterService.status.next });
         if ($scope.editing) {
           $state.go('^.view');
         }
@@ -36,7 +36,7 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule', 'MessageCenter
         if (reason) {
           message += ' Reason: ' + reason;
         }
-        messageCenterService.add('danger', message);
+        messageCenterService.add('danger', message, { status: messageCenterService.status.next });
         $state.go('home');
       });
     };
@@ -121,14 +121,14 @@ angular.module('reminderApp.controllers', ['ChromeStorageModule', 'MessageCenter
     $scope.saveProfile = function () {
       // Save it using the profile service.
       profileService.set($scope.profile).then(function () {
-        messageCenterService.add('success', 'Your profile has been successfully updated.');
+        messageCenterService.add('success', 'Your profile has been successfully updated.', { status: messageCenterService.status.next });
         $state.go('^.view');
       }, function (reason) {
         var message = 'Your profile could not be updated.';
         if (reason) {
           message += ' Reason: ' + reason;
         }
-        messageCenterService.add('danger', message);
+        messageCenterService.add('danger', message, { status: messageCenterService.status.next });
         $state.go('^.view');
       }); // TODO: Error handling for the services and alert messages when error.
     };
